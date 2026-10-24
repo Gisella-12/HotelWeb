@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Reserva</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            padding: 40px 15px;
+            color: #263238;
+        }
+
+        .contenedor {
+            background: white;
+            width: 100%;
+            max-width: 550px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #163b5c;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background: #163b5c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #24577f;
+        }
+
+        .volver {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #163b5c;
+        }
+
+        .ayuda {
+            margin-top: 10px;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="contenedor">
+
+    <h1 th:text="${reserva.idReserva == 0
+                  ? 'Registrar Reserva'
+                  : 'Editar Reserva'}">
+        Registrar Reserva
+    </h1>
+
+    <form th:action="@{/reservas/guardar}"
+          th:object="${reserva}"
+          method="post">
+
+        <input type="hidden" th:field="*{idReserva}">
+
+        <label for="idCliente">Cliente</label>
+
+        <select th:field="*{idCliente}" required>
+
+            <option value="0" disabled>
+            -- Seleccione un cliente --
+            </option>
+
+            <option th:each="c : ${clientes}"
+                    th:value="${c.idCliente}"
+                    th:text="${c.nombre + ' ' + c.apellido
+                        + ' - DNI: ' + c.dni}">
+            </option>
+
+        </select>
+
+        <label for="idHabitacion">Habitación</label>
+
+        <select th:field="*{idHabitacion}" required>
+
+            <option value="0" disabled>
+                -- Seleccione una habitación --
+            </option>
+
+            <option th:each="h : ${habitaciones}"
+                    th:value="${h.idHabitacion}"
+                    th:text="${h.numero + ' - ' + h.tipo
+                        + ' - S/ '
+                        + #numbers.formatDecimal(h.precio, 1, 2)
+                        + ' - ' + h.estado}">
+            </option>
+
+        </select>
+
+        <p class="ayuda">
+            El estado mostrado corresponde al estado actual
+            de la habitación. La disponibilidad para las fechas
+            seleccionadas se verificará al guardar.
+        </p>
+
+        <label for="fechaInicio">Fecha de ingreso</label>
+
+        <input type="date"
+               th:field="*{fechaInicio}"
+               required>
+
+        <label for="fechaFin">Fecha de salida</label>
+
+        <input type="date"
+               th:field="*{fechaFin}"
+               required>
+
+        <p class="ayuda">
+            La fecha de salida debe ser posterior
+            a la fecha de ingreso.
+        </p>
+
+        <label for="estado">Estado</label>
+
+        <select th:field="*{estado}" required>
+
+            <option value="Reservada">
+                Reservada
+            </option>
+
+            <option value="Confirmada">
+                Confirmada
+            </option>
+
+        </select>
+
+        <p class="ayuda">
+            El ingreso se registra con Check-in.
+            La reserva finaliza mediante Check-out.
+        </p>
+
+        <button type="submit"
+                th:text="${reserva.idReserva == 0
+                    ? 'Guardar Reserva'
+                    : 'Actualizar Reserva'}">
+            Guardar Reserva
+        </button>
+
+    </form>
+
+    <a class="volver" th:href="@{/reservas}">
+        Volver a reservas
+    </a>
+
+</main>
+
+<script>
+    const fechaInicio = document.getElementById("fechaInicio");
+    const fechaFin = document.getElementById("fechaFin");
+
+    function validarFechas() {
+        fechaFin.setCustomValidity("");
+
+        if (fechaInicio.value && fechaFin.value
+                && fechaFin.value <= fechaInicio.value) {
+            fechaFin.setCustomValidity(
+                "La fecha de salida debe ser posterior "
+                + "a la fecha de ingreso."
+            );
+        }
+    }
+
+    fechaInicio.addEventListener("change", validarFechas);
+    fechaFin.addEventListener("change", validarFechas);
+
+    validarFechas();
+</script>
+
+</body>
+</html>

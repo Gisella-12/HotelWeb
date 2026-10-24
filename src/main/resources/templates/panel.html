@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>HotelWeb - Panel Principal</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            color: #263238;
+        }
+
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            overflow-y: auto;
+            background: #163b5c;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 25px 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 13px;
+            margin-bottom: 8px;
+            border-radius: 7px;
+        }
+
+        .sidebar a:hover {
+            background: #24577f;
+        }
+
+        .contenido {
+            margin-left: 240px;
+            padding: 35px;
+        }
+
+        .encabezado {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .encabezado h1 {
+            color: #163b5c;
+            margin-bottom: 8px;
+        }
+
+        .tarjetas {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .enlace-tarjeta {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .tarjeta {
+            height: 100%;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.25s;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .tarjeta h3 {
+            color: #163b5c;
+            margin-bottom: 10px;
+        }
+
+        .numero {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .detalle {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .resumen {
+            margin-top: 35px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .resumen h2 {
+            color: #163b5c;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #163b5c;
+            color: white;
+        }
+
+        .importe {
+            white-space: nowrap;
+        }
+
+        .estado {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .disponible {
+            color: #237a45;
+        }
+
+        .ocupada {
+            color: #c0392b;
+        }
+
+        .mantenimiento {
+            color: #996000;
+        }
+
+        .limpieza {
+            color: #7d3c98;
+        }
+
+        .vacio {
+            padding: 25px;
+            text-align: center;
+            color: #666;
+        }
+
+        @media (max-width: 1000px) {
+            .tarjetas {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding: 20px;
+            }
+
+            .sidebar h2 {
+                margin-bottom: 15px;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                margin: 3px;
+                padding: 10px;
+            }
+
+            .contenido {
+                margin-left: 0;
+                padding: 18px;
+            }
+
+            .tarjetas {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- MENÚ LATERAL -->
+<nav class="sidebar" aria-label="Menú principal">
+
+    <h2>🏨 HotelWeb</h2>
+
+    <a th:href="@{/panel}">
+        🏠 Inicio
+    </a>
+
+    <a th:href="@{/habitaciones}">
+        🛏 Habitaciones
+    </a>
+
+    <a th:href="@{/reservas}">
+        📅 Reservas
+    </a>
+
+    <a th:href="@{/reservas/historial}">
+        📋 Historial
+    </a>
+
+    <a th:href="@{/clientes}">
+        👤 Clientes
+    </a>
+
+    <a th:href="@{/servicios}">
+        🧾 Servicios
+    </a>
+
+    <a th:href="@{/pagos}">
+        💰 Pagos
+    </a>
+
+    <a th:href="@{/pagos/reportes}">
+        📊 Reportes
+    </a>
+
+    <a th:href="@{/logout}">
+        🚪 Cerrar Sesión
+    </a>
+
+</nav>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="contenido">
+
+    <header class="encabezado">
+        <h1>Panel Principal</h1>
+        <p>Bienvenido al Sistema Web de Gestión Hotelera</p>
+    </header>
+
+    <div class="tarjetas">
+
+        <a th:href="@{/habitaciones}" class="enlace-tarjeta">
+            <div class="tarjeta">
+                <h3>🛏 Habitaciones</h3>
+                <div class="numero"
+                     th:text="${totalHabitaciones}">
+                    0
+                </div>
+            </div>
+        </a>
+
+        <a th:href="@{/habitaciones}" class="enlace-tarjeta">
+            <div class="tarjeta">
+                <h3>✅ Disponibles</h3>
+                <div class="numero"
+                     th:text="${disponibles}">
+                    0
+                </div>
+            </div>
+        </a>
+
+        <a th:href="@{/habitaciones}" class="enlace-tarjeta">
+            <div class="tarjeta">
+                <h3>🚪 Ocupadas</h3>
+                <div class="numero"
+                     th:text="${ocupadas}">
+                    0
+                </div>
+            </div>
+        </a>
+
+        <a th:href="@{/clientes}" class="enlace-tarjeta">
+            <div class="tarjeta">
+                <h3>👤 Clientes</h3>
+                <div class="numero"
+                     th:text="${totalClientes}">
+                    0
+                </div>
+            </div>
+        </a>
+
+        <a th:href="@{/reservas}" class="enlace-tarjeta">
+            <div class="tarjeta">
+                <h3>📅 Reservas</h3>
+                <div class="numero"
+                     th:text="${totalReservas}">
+                    0
+                </div>
+            </div>
+        </a>
+
+        <a th:href="@{/pagos}" class="enlace-tarjeta">
+            <div class="tarjeta">
+                <h3>💰 Total de pagos registrados</h3>
+
+                <div class="numero">
+                    S/
+                    <span th:text="${#numbers.formatDecimal(
+                        totalIngresos, 1, 2
+                    )}">
+                        0.00
+                    </span>
+                </div>
+
+                <p class="detalle">
+                    Acumulado de todos los pagos.
+                    Consulta Reportes para filtrar por fechas.
+                </p>
+            </div>
+        </a>
+
+    </div>
+
+    <!-- HABITACIONES DEL HOTEL -->
+    <section class="resumen">
+
+        <h2>🛏 Habitaciones del Hotel</h2>
+
+        <div class="tabla-contenedor">
+            <table>
+
+                <thead>
+                    <tr>
+                        <th scope="col">Número</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Precio por noche</th>
+                        <th scope="col">Estado</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr th:if="${#lists.isEmpty(habitaciones)}">
+                        <td colspan="4" class="vacio">
+                            No hay habitaciones registradas.
+                        </td>
+                    </tr>
+
+                    <tr th:each="h : ${habitaciones}">
+
+                        <td th:text="${h.numero}"></td>
+
+                        <td th:text="${h.tipo}"></td>
+
+                        <td class="importe">
+                            S/
+                            <span th:text="${#numbers.formatDecimal(
+                                h.precio, 1, 2
+                            )}"></span>
+                        </td>
+
+                        <td th:switch="${h.estado}">
+
+                            <span th:case="'Disponible'"
+                                  class="estado disponible"
+                                  th:text="${h.estado}">
+                            </span>
+
+                            <span th:case="'Ocupada'"
+                                  class="estado ocupada"
+                                  th:text="${h.estado}">
+                            </span>
+
+                            <span th:case="'Mantenimiento'"
+                                  class="estado mantenimiento"
+                                  th:text="${h.estado}">
+                            </span>
+
+                            <span th:case="'Limpieza'"
+                                  class="estado limpieza"
+                                  th:text="${h.estado}">
+                            </span>
+
+                            <span th:case="*"
+                                  class="estado"
+                                  th:text="${h.estado != null
+                                      ? h.estado : 'Sin estado'}">
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

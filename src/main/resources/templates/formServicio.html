@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<title>Servicio</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
+}
+
+body{
+    background:#f4f6f8;
+    padding:30px;
+}
+
+.formulario{
+    width:500px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+    color:#163b5c;
+    margin-bottom:25px;
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-top:15px;
+}
+
+input, textarea{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:1px solid #aaa;
+    border-radius:5px;
+}
+
+textarea{
+    height:100px;
+    resize:vertical;
+}
+
+button{
+    width:100%;
+    margin-top:25px;
+    padding:12px;
+    background:#163b5c;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#24577f;
+}
+
+a{
+    display:block;
+    text-align:center;
+    margin-top:15px;
+    color:#163b5c;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="formulario">
+
+<h1 th:text="${servicio.idServicio == 0
+              ? 'Registrar Servicio'
+              : 'Editar Servicio'}">
+    Registrar Servicio
+</h1>
+
+<form th:action="@{/servicios/guardar}"
+      th:object="${servicio}"
+      method="post">
+
+    <!-- ID OCULTO PARA EDITAR -->
+    <input type="hidden"
+           th:field="*{idServicio}">
+
+    <label>Nombre</label>
+
+    <input type="text"
+           th:field="*{nombre}"
+           required>
+
+    <label>Descripción</label>
+
+    <textarea th:field="*{descripcion}"></textarea>
+
+    <label>Precio</label>
+
+    <input type="number"
+           step="0.01"
+           min="0"
+           th:field="*{precio}"
+           required>
+
+    <button type="submit"
+            th:text="${servicio.idServicio == 0
+                     ? 'Guardar Servicio'
+                     : 'Actualizar Servicio'}">
+        Guardar Servicio
+    </button>
+
+</form>
+
+<a href="/servicios">
+    Volver a servicios
+</a>
+
+</div>
+
+</body>
+
+</html>

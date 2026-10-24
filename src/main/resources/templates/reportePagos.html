@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Reporte de pagos</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f4f6f8;
+            color: #263238;
+        }
+
+        .contenedor {
+            max-width: 1400px;
+            margin: auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #163b5c;
+        }
+
+        .ayuda {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .botones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .boton,
+        button {
+            display: inline-block;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            background: #163b5c;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .boton:hover,
+        button:hover {
+            background: #24577f;
+        }
+
+        .principal {
+            background: #555;
+        }
+
+        .principal:hover {
+            background: #333;
+        }
+
+        .excel {
+            background: #237a45;
+        }
+
+        .excel:hover {
+            background: #195b32;
+        }
+
+        .filtros {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: end;
+            gap: 16px;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f1f6fa;
+            border-radius: 8px;
+        }
+
+        .campo {
+            flex: 1 1 220px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .mensaje {
+            padding: 14px;
+            margin: 20px 0;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+
+        .error {
+            color: #922b21;
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+        }
+
+        .resumen {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .tarjeta {
+            flex: 1 1 240px;
+            padding: 20px;
+            border: 1px solid #d5e2ed;
+            border-radius: 8px;
+            background: #f1f6fa;
+        }
+
+        .tarjeta p {
+            margin: 0 0 10px;
+            color: #555;
+        }
+
+        .valor {
+            font-size: 26px;
+            font-weight: bold;
+            color: #163b5c;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 14px;
+            background: #163b5c;
+            color: white;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .importe {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .vacio {
+            padding: 25px;
+            text-align: center;
+            color: #666;
+        }
+
+        .total {
+            background: #f1f6fa;
+            color: #163b5c;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .contenedor {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="contenedor">
+
+    <h1>Reporte de pagos</h1>
+
+    <p class="ayuda">
+        Consulta los pagos registrados entre dos fechas.
+        El total recaudado corresponde a la fecha de cada pago,
+        sin importar si la reserva está activa o finalizada.
+    </p>
+
+    <div class="botones">
+
+        <a class="boton" th:href="@{/pagos}">
+            Volver a pagos
+        </a>
+
+        <a class="boton principal" th:href="@{/panel}">
+            Página Principal
+        </a>
+
+    </div>
+
+    <div th:if="${error != null}"
+         class="mensaje error"
+         role="alert"
+         th:text="${error}">
+    </div>
+
+    <!-- FILTRO POR FECHAS -->
+    <form class="filtros"
+          th:action="@{/pagos/reportes}"
+          method="get">
+
+        <div class="campo">
+            <label for="desde">Desde</label>
+            <input id="desde"
+                   name="desde"
+                   type="date"
+                   th:value="${desde}"
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="hasta">Hasta</label>
+            <input id="hasta"
+                   name="hasta"
+                   type="date"
+                   th:value="${hasta}"
+                   required>
+        </div>
+
+        <button type="submit">
+            Consultar
+        </button>
+
+    </form>
+
+    <!-- RESULTADOS -->
+    <section th:if="${consultaCorrecta}">
+
+        <p class="ayuda">
+            Periodo consultado:
+            <strong th:text="${desde}"></strong>
+            al
+            <strong th:text="${hasta}"></strong>.
+            Ambas fechas están incluidas.
+        </p>
+
+        <div class="resumen">
+
+            <div class="tarjeta">
+                <p>Cantidad de pagos</p>
+                <span class="valor"
+                      th:text="${cantidadPagos}">
+                </span>
+            </div>
+
+            <div class="tarjeta">
+                <p>Total recaudado</p>
+                <span class="valor">
+                    S/
+                    <span th:text="${#numbers.formatDecimal(
+                        totalRecaudado, 1, 2
+                    )}"></span>
+                </span>
+            </div>
+
+        </div>
+
+        <div class="botones">
+            <a class="boton excel"
+               th:href="@{/pagos/reportes/excel(
+                   desde=${desde},
+                   hasta=${hasta}
+               )}">
+                Descargar Excel
+            </a>
+        </div>
+
+        <div class="tabla-contenedor">
+            <table>
+
+                <thead>
+                    <tr>
+                        <th scope="col">ID del pago</th>
+                        <th scope="col">Reserva</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Habitación</th>
+                        <th scope="col">Fecha de pago</th>
+                        <th scope="col">Método de pago</th>
+                        <th scope="col" class="importe">Monto</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr th:if="${#lists.isEmpty(pagos)}">
+                        <td colspan="7" class="vacio">
+                            No hay pagos registrados en este periodo.
+                        </td>
+                    </tr>
+
+                    <tr th:each="p : ${pagos}">
+
+                        <td th:text="${p.idPago}"></td>
+
+                        <td th:text="${p.idReserva}"></td>
+
+                        <td th:text="${p.nombreCliente}"></td>
+
+                        <td th:text="${p.descripcionHabitacion}"></td>
+
+                        <td th:text="${#temporals.format(
+                            p.fechaPago, 'dd/MM/yyyy'
+                        )}"></td>
+
+                        <td th:text="${p.metodoPago}"></td>
+
+                        <td class="importe">
+                            S/
+                            <span th:text="${#numbers.formatDecimal(
+                                p.monto, 1, 2
+                            )}"></span>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+                <tfoot>
+                    <tr class="total">
+                        <td colspan="6">Total recaudado</td>
+                        <td class="importe">
+                            S/
+                            <span th:text="${#numbers.formatDecimal(
+                                totalRecaudado, 1, 2
+                            )}"></span>
+                        </td>
+                    </tr>
+                </tfoot>
+
+            </table>
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Pago</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
+}
+
+body{
+    background:#f4f6f8;
+    padding:30px;
+}
+
+.formulario{
+    width:500px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+    color:#163b5c;
+    margin-bottom:25px;
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-top:15px;
+}
+
+input, select{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:1px solid #aaa;
+    border-radius:5px;
+}
+
+button{
+    width:100%;
+    margin-top:25px;
+    padding:12px;
+    background:#163b5c;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#24577f;
+}
+
+a{
+    display:block;
+    text-align:center;
+    margin-top:15px;
+    color:#163b5c;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="formulario">
+
+<h1 th:text="${pago.idPago == 0
+              ? 'Registrar Pago'
+              : 'Editar Pago'}">
+    Registrar Pago
+</h1>
+
+<form th:action="@{/pagos/guardar}"
+      th:object="${pago}"
+      method="post">
+
+    <!-- ID DEL PAGO OCULTO -->
+    <input type="hidden"
+           th:field="*{idPago}">
+
+    <!-- RESERVA -->
+    <label>Reserva</label>
+
+    <select th:field="*{idReserva}" required>
+
+        <option th:each="r : ${reservas}"
+                th:value="${r.idReserva}"
+                th:text="'Reserva #' + ${r.idReserva}
+                         + ' - ' + ${r.nombreCliente}
+                         + ' - Habitación ' + ${r.descripcionHabitacion}">
+        </option>
+
+    </select>
+
+    <!-- FECHA -->
+    <label>Fecha Pago</label>
+
+    <input type="date"
+           th:field="*{fechaPago}"
+           required>
+
+    <!-- MONTO -->
+    <label>Monto</label>
+
+    <input type="number"
+           step="0.01"
+           min="0.01"
+           th:field="*{monto}"
+           required>
+
+    <!-- METODO DE PAGO -->
+    <label>Método de Pago</label>
+
+    <select th:field="*{metodoPago}" required>
+
+        <option value="Efectivo">
+            Efectivo
+        </option>
+
+        <option value="Tarjeta">
+            Tarjeta
+        </option>
+
+        <option value="Transferencia">
+            Transferencia
+        </option>
+
+    </select>
+
+    <!-- BOTON -->
+    <button type="submit"
+            th:text="${pago.idPago == 0
+                     ? 'Guardar Pago'
+                     : 'Actualizar Pago'}">
+        Guardar Pago
+    </button>
+
+</form>
+
+<a href="/pagos">
+    Volver a pagos
+</a>
+
+</div>
+
+</body>
+
+</html>

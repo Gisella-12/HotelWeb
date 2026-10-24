@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Gestión de Reservas</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            padding: 30px;
+        }
+
+        .contenedor {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #163b5c;
+            margin-bottom: 20px;
+        }
+
+        .botones-superiores {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .boton, .principal, .historial {
+            display: inline-block;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .boton {
+            background: #163b5c;
+        }
+
+        .boton:hover {
+            background: #24577f;
+        }
+
+        .principal {
+            background: #555;
+        }
+
+        .principal:hover {
+            background: #333;
+        }
+
+        .historial {
+            background: #237a45;
+        }
+
+        .historial:hover {
+            background: #195b32;
+        }
+
+        .mensaje {
+            padding: 14px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+
+        .exito {
+            background: #e8f5e9;
+            color: #205c29;
+            border: 1px solid #a5d6a7;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #922b21;
+            border: 1px solid #ef9a9a;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #163b5c;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f5f8fb;
+        }
+
+        .acciones {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            min-width: 180px;
+        }
+
+        .acciones form {
+            margin: 0;
+        }
+
+        .editar, .eliminar, .check-in, .check-out {
+            display: inline-block;
+            color: white;
+            padding: 9px 12px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .editar {
+            background: #2980b9;
+        }
+
+        .eliminar {
+            background: #c0392b;
+        }
+
+        .check-in {
+            background: #237a45;
+        }
+
+        .check-out {
+            background: #7d3c98;
+        }
+
+        .editar:hover {
+            background: #21618c;
+        }
+
+        .eliminar:hover {
+            background: #962d22;
+        }
+
+        .check-in:hover {
+            background: #195b32;
+        }
+
+        .check-out:hover {
+            background: #633078;
+        }
+
+        .estado {
+            font-weight: bold;
+            color: #24577f;
+        }
+
+        .sin-registro {
+            color: #666;
+        }
+
+        .tabla-vacia {
+            text-align: center;
+            color: #666;
+            padding: 25px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .contenedor {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="contenedor">
+
+    <h1>Gestión de Reservas</h1>
+
+    <div th:if="${mensaje != null}"
+         class="mensaje exito"
+         role="status"
+         th:text="${mensaje}">
+    </div>
+
+    <div th:if="${error != null}"
+         class="mensaje error"
+         role="alert"
+         th:text="${error}">
+    </div>
+
+    <div class="botones-superiores">
+
+        <a class="boton" th:href="@{/reservas/nueva}">
+            + Nueva Reserva
+        </a>
+
+        <a class="historial" th:href="@{/reservas/historial}">
+            Historial
+        </a>
+
+        <a class="principal" th:href="@{/panel}">
+            Página Principal
+        </a>
+
+    </div>
+
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Habitación</th>
+                    <th scope="col">Fecha Inicio</th>
+                    <th scope="col">Fecha Fin</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Check-in registrado</th>
+                    <th scope="col">Check-out registrado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:if="${#lists.isEmpty(reservas)}">
+                    <td colspan="9" class="tabla-vacia">
+                        No hay reservas registradas.
+                    </td>
+                </tr>
+
+                <tr th:each="r : ${reservas}">
+
+                    <td th:text="${r.idReserva}"></td>
+                    <td th:text="${r.nombreCliente}"></td>
+                    <td th:text="${r.descripcionHabitacion}"></td>
+                    <td th:text="${r.fechaInicio}"></td>
+                    <td th:text="${r.fechaFin}"></td>
+
+                    <td class="estado" th:text="${r.estado}"></td>
+
+                    <td>
+                        <span th:if="${r.fechaCheckIn != null}"
+                              th:text="${#temporals.format(
+                                  r.fechaCheckIn,
+                                  'dd/MM/yyyy HH:mm'
+                              )}">
+                        </span>
+
+                        <span th:if="${r.fechaCheckIn == null}"
+                              class="sin-registro">
+                            Sin registro
+                        </span>
+                    </td>
+
+                    <td>
+                        <span th:if="${r.fechaCheckOut != null}"
+                              th:text="${#temporals.format(
+                                  r.fechaCheckOut,
+                                  'dd/MM/yyyy HH:mm'
+                              )}">
+                        </span>
+
+                        <span th:if="${r.fechaCheckOut == null}"
+                              class="sin-registro">
+                            Sin registro
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="acciones">
+
+                            <a class="editar"
+                               th:href="@{/reservas/{id}/consumos(
+                                   id=${r.idReserva}
+                               )}">
+                                Adicionales
+                            </a>
+
+                            <form th:if="${r.fechaCheckIn == null
+                                          and r.fechaCheckOut == null
+                                          and (r.estado == 'Reservada'
+                                               or r.estado == 'Confirmada')}"
+                                  th:action="@{/reservas/check-in/{id}(
+                                      id=${r.idReserva}
+                                  )}"
+                                  method="post"
+                                  onsubmit="return confirm(
+                                      '¿Confirmas la llegada del huésped?'
+                                  );">
+
+                                <button class="check-in" type="submit">
+                                    Check-in
+                                </button>
+                            </form>
+
+                            <form th:if="${r.fechaCheckIn != null
+                                          and r.fechaCheckOut == null
+                                          and r.estado == 'En alojamiento'}"
+                                  th:action="@{/reservas/check-out/{id}(
+                                      id=${r.idReserva}
+                                  )}"
+                                  method="post"
+                                  onsubmit="return confirm(
+                                      '¿Confirmas la salida del huésped? La habitación pasará a Limpieza.'
+                                  );">
+
+                                <button class="check-out" type="submit">
+                                    Check-out
+                                </button>
+                            </form>
+
+                            <a th:if="${r.fechaCheckIn == null
+                                        and r.fechaCheckOut == null}"
+                               class="editar"
+                               th:href="@{/reservas/editar/{id}(
+                                   id=${r.idReserva}
+                               )}">
+                                Editar
+                            </a>
+
+                            <a th:if="${r.fechaCheckIn == null
+                                        and r.fechaCheckOut == null}"
+                               class="eliminar"
+                               th:href="@{/reservas/eliminar/{id}(
+                                   id=${r.idReserva}
+                               )}"
+                               onclick="return confirm(
+                                   '¿Deseas eliminar esta reserva?'
+                               );">
+                                Eliminar
+                            </a>
+
+                            <span th:if="${r.fechaCheckOut != null}"
+                                  class="sin-registro">
+                                Estancia finalizada
+                            </span>
+
+                        </div>
+                    </td>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+</body>
+</html>

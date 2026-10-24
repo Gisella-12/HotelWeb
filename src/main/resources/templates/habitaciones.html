@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Habitaciones</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial;
+        }
+
+        body{
+            background:#f4f6f8;
+            padding:30px;
+        }
+
+        .contenedor{
+            background:white;
+            padding:30px;
+            border-radius:12px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        h1{
+            color:#163b5c;
+            margin-bottom:20px;
+        }
+
+        .botones-superiores{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+        }
+
+        .boton{
+            background:#163b5c;
+            color:white;
+            padding:12px 20px;
+            text-decoration:none;
+            border-radius:6px;
+        }
+
+        .boton:hover{
+            background:#24577f;
+        }
+
+        .principal{
+            background:#555;
+            color:white;
+            padding:12px 20px;
+            text-decoration:none;
+            border-radius:6px;
+        }
+
+        .principal:hover{
+            background:#333;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th{
+            background:#163b5c;
+            color:white;
+            padding:12px;
+        }
+
+        td{
+            padding:12px;
+            border-bottom:1px solid #ddd;
+        }
+
+        .editar{
+            background:#2980b9;
+            color:white;
+            padding:8px 12px;
+            text-decoration:none;
+            border-radius:5px;
+            margin-right:6px;
+        }
+
+        .eliminar{
+            background:#c0392b;
+            color:white;
+            padding:8px 12px;
+            text-decoration:none;
+            border-radius:5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>Gestión de Habitaciones</h1>
+
+    <div class="botones-superiores">
+
+        <a class="boton" href="/habitaciones/nueva">
+            + Nueva Habitación
+        </a>
+
+        <a class="principal" href="/panel">
+            🏠 Página Principal
+        </a>
+
+    </div>
+
+    <table>
+
+        <tr>
+            <th>Número</th>
+            <th>Tipo</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th>Acción</th>
+        </tr>
+
+        <tr th:each="h : ${habitaciones}">
+
+            <td th:text="${h.numero}"></td>
+            <td th:text="${h.tipo}"></td>
+            <td th:text="${h.precio}"></td>
+            <td th:text="${h.estado}"></td>
+
+            <td>
+
+                <a class="editar"
+                   th:href="@{/habitaciones/editar/{id}(id=${h.idHabitacion})}">
+                    Editar
+                </a>
+
+                <a class="eliminar"
+                   th:href="@{/habitaciones/eliminar/{id}(id=${h.idHabitacion})}">
+                    Eliminar
+                </a>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+</body>
+</html>

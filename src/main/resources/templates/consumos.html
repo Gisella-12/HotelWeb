@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Adicionales y cuenta de la reserva</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f4f6f8;
+            color: #263238;
+        }
+
+        .contenedor {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #163b5c;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        .volver,
+        button {
+            display: inline-block;
+            padding: 12px 18px;
+            color: white;
+            background: #163b5c;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .volver:hover,
+        button:hover {
+            background: #24577f;
+        }
+
+        .datos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 30px;
+            margin: 22px 0;
+        }
+
+        .datos p {
+            margin: 0;
+        }
+
+        .mensaje {
+            padding: 14px;
+            margin: 18px 0;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+
+        .exito {
+            color: #205c29;
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+        }
+
+        .error {
+            color: #922b21;
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+        }
+
+        .aviso {
+            color: #594600;
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+        }
+
+        .formulario {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: end;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .campo {
+            flex: 1 1 260px;
+        }
+
+        .cantidad {
+            flex: 0 1 150px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .ayuda {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            padding: 14px;
+            text-align: left;
+            background: #163b5c;
+            color: white;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .importe {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .vacio {
+            text-align: center;
+            color: #666;
+        }
+
+        .total {
+            margin-top: 22px;
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            color: #163b5c;
+        }
+
+        .resumen {
+            max-width: 600px;
+            margin: 20px 0 20px auto;
+            padding: 20px;
+            background: #f1f6fa;
+            border: 1px solid #d5e2ed;
+            border-radius: 10px;
+        }
+
+        .fila-resumen {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid #d5e2ed;
+        }
+
+        .fila-resumen:last-child {
+            border-bottom: none;
+        }
+
+        .destacado {
+            font-weight: bold;
+            color: #163b5c;
+        }
+
+        .saldo {
+            font-size: 21px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .contenedor {
+                padding: 18px;
+            }
+
+            .resumen {
+                padding: 15px;
+            }
+
+            .fila-resumen {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="contenedor">
+
+    <h1>Adicionales y cuenta de la reserva</h1>
+
+    <a class="volver" th:href="@{/reservas}">
+        Volver a reservas
+    </a>
+
+    <div class="datos">
+        <p>
+            <strong>Reserva:</strong>
+            <span th:text="${reserva.idReserva}"></span>
+        </p>
+
+        <p>
+            <strong>Estado:</strong>
+            <span th:text="${reserva.estado}"></span>
+        </p>
+
+        <p>
+            <strong>Periodo reservado:</strong>
+            <span th:text="${reserva.fechaInicio}"></span>
+            al
+            <span th:text="${reserva.fechaFin}"></span>
+        </p>
+    </div>
+
+    <div th:if="${mensaje != null}"
+         class="mensaje exito"
+         role="status"
+         th:text="${mensaje}">
+    </div>
+
+    <div th:if="${error != null}"
+         class="mensaje error"
+         role="alert"
+         th:text="${error}">
+    </div>
+
+    <!-- RESUMEN DE LA CUENTA -->
+    <section>
+        <h2>Resumen de la cuenta</h2>
+
+        <div th:if="${cuentaCalculable}">
+
+            <p class="ayuda">
+                El alojamiento se calcula con las noches
+                del periodo reservado y la tarifa guardada
+                en esta reserva.
+            </p>
+
+            <div class="resumen">
+
+                <div class="fila-resumen">
+                    <span>Noches reservadas</span>
+                    <strong th:text="${noches}"></strong>
+                </div>
+
+                <div class="fila-resumen">
+                    <span>Precio por noche</span>
+                    <span class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            reserva.precioNoche, 1, 2
+                        )}"></span>
+                    </span>
+                </div>
+
+                <div class="fila-resumen">
+                    <span>Total de alojamiento</span>
+                    <span class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            totalAlojamiento, 1, 2
+                        )}"></span>
+                    </span>
+                </div>
+
+                <div class="fila-resumen">
+                    <span>Total de adicionales</span>
+                    <span class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            totalConsumos, 1, 2
+                        )}"></span>
+                    </span>
+                </div>
+
+                <div class="fila-resumen destacado">
+                    <span>Total de la cuenta</span>
+                    <span class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            totalCuenta, 1, 2
+                        )}"></span>
+                    </span>
+                </div>
+
+                <div class="fila-resumen">
+                    <span>Total pagado</span>
+                    <span class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            totalPagado, 1, 2
+                        )}"></span>
+                    </span>
+                </div>
+
+                <div class="fila-resumen destacado saldo">
+                    <span>Saldo pendiente</span>
+                    <span class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            saldoPendiente, 1, 2
+                        )}"></span>
+                    </span>
+                </div>
+
+                <div th:if="${saldoFavor.signum() > 0}"
+                     class="fila-resumen">
+                    <span>Saldo a favor del huésped</span>
+                    <span class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            saldoFavor, 1, 2
+                        )}"></span>
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <p th:unless="${cuentaCalculable}"
+           class="mensaje aviso"
+           th:text="${avisoCuenta}">
+        </p>
+
+    </section>
+
+    <!-- REGISTRO DURANTE EL ALOJAMIENTO -->
+    <section th:if="${permiteAgregar}">
+
+        <h2>Agregar un adicional</h2>
+
+        <p class="ayuda">
+            Netflix: S/ 10 por estancia.
+            Gaseosa: S/ 5 por unidad.
+            Cerveza: S/ 7 por unidad.
+            Para Netflix, utiliza cantidad 1.
+        </p>
+
+        <p th:if="${#lists.isEmpty(adicionales)}"
+           class="mensaje aviso">
+            No hay adicionales habilitados.
+            Registra Netflix, Gaseosa y Cerveza en Servicios.
+        </p>
+
+        <form th:unless="${#lists.isEmpty(adicionales)}"
+              class="formulario"
+              th:action="@{/reservas/{id}/consumos/guardar(
+                  id=${reserva.idReserva}
+              )}"
+              method="post">
+
+            <div class="campo">
+                <label for="idServicio">Adicional</label>
+
+                <select id="idServicio"
+                        name="idServicio"
+                        required>
+
+                    <option value="" disabled selected>
+                        Selecciona un adicional
+                    </option>
+
+                    <option th:each="s : ${adicionales}"
+                            th:value="${s.idServicio}"
+                            th:text="${s.nombre + ' — S/ '
+                                + #numbers.formatDecimal(
+                                    s.precio, 1, 2
+                                )}">
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="campo cantidad">
+                <label for="cantidad">Cantidad</label>
+
+                <input id="cantidad"
+                       name="cantidad"
+                       type="number"
+                       min="1"
+                       step="1"
+                       value="1"
+                       required>
+            </div>
+
+            <button type="submit">
+                Registrar adicional
+            </button>
+
+        </form>
+
+    </section>
+
+    <p th:unless="${permiteAgregar}"
+       class="mensaje aviso">
+        Solo puedes registrar adicionales mientras
+        el huésped está en alojamiento.
+        En esta reserva puedes consultar los consumos registrados.
+    </p>
+
+    <!-- LISTADO DE ADICIONALES -->
+    <h2>Adicionales registrados</h2>
+
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Fecha y hora</th>
+                    <th scope="col">Adicional</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col" class="importe">
+                        Precio unitario
+                    </th>
+                    <th scope="col" class="importe">
+                        Subtotal
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:if="${#lists.isEmpty(consumos)}">
+                    <td colspan="5" class="vacio">
+                        Esta reserva no tiene adicionales registrados.
+                    </td>
+                </tr>
+
+                <tr th:each="c : ${consumos}">
+
+                    <td th:text="${#temporals.format(
+                        c.fechaConsumo, 'dd/MM/yyyy HH:mm'
+                    )}"></td>
+
+                    <td th:text="${c.nombreServicio}"></td>
+
+                    <td th:text="${c.cantidad}"></td>
+
+                    <td class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            c.precioUnitario, 1, 2
+                        )}"></span>
+                    </td>
+
+                    <td class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            c.subtotal, 1, 2
+                        )}"></span>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="total">
+        Total de adicionales: S/
+        <span th:text="${#numbers.formatDecimal(
+            totalConsumos, 1, 2
+        )}"></span>
+    </p>
+
+    <!-- LISTADO DE PAGOS -->
+    <h2>Pagos registrados</h2>
+
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">ID del pago</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Método de pago</th>
+                    <th scope="col" class="importe">Monto</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:if="${#lists.isEmpty(pagos)}">
+                    <td colspan="4" class="vacio">
+                        Esta reserva no tiene pagos registrados.
+                    </td>
+                </tr>
+
+                <tr th:each="p : ${pagos}">
+
+                    <td th:text="${p.idPago}"></td>
+
+                    <td th:text="${#temporals.format(
+                        p.fechaPago, 'dd/MM/yyyy'
+                    )}"></td>
+
+                    <td th:text="${p.metodoPago}"></td>
+
+                    <td class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            p.monto, 1, 2
+                        )}"></span>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="total">
+        Total pagado: S/
+        <span th:text="${#numbers.formatDecimal(
+            totalPagado, 1, 2
+        )}"></span>
+    </p>
+
+</main>
+
+</body>
+</html>

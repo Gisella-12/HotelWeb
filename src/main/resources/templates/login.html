@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HotelWeb - Inicio de Sesión</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background:
+                linear-gradient(
+                    rgba(8, 28, 48, 0.92),
+                    rgba(10, 50, 78, 0.92)
+                );
+        }
+
+        .login-container {
+            width: 390px;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 18px;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .icono-hotel {
+            width: 70px;
+            height: 70px;
+            margin: auto;
+            margin-bottom: 15px;
+
+            background-color: #163b5c;
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 50%;
+            font-size: 34px;
+        }
+
+        .logo h1 {
+            color: #163b5c;
+            font-size: 30px;
+            margin-bottom: 6px;
+        }
+
+        .logo p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .mensaje-error {
+            background-color: #ffe5e5;
+            color: #c62828;
+
+            padding: 12px;
+            margin-bottom: 20px;
+
+            border: 1px solid #efb4b4;
+            border-radius: 8px;
+
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        .campo label {
+            display: block;
+            margin-bottom: 8px;
+
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .campo input {
+            width: 100%;
+            padding: 13px;
+
+            border: 1px solid #cccccc;
+            border-radius: 8px;
+
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .campo input:focus {
+            border-color: #163b5c;
+            outline: none;
+
+            box-shadow:
+                0 0 0 3px rgba(22, 59, 92, 0.10);
+        }
+
+        .boton {
+            width: 100%;
+            padding: 14px;
+
+            border: none;
+            border-radius: 8px;
+
+            background-color: #163b5c;
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .boton:hover {
+            background-color: #0c2c47;
+        }
+
+        .pie {
+            text-align: center;
+            margin-top: 25px;
+
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <div class="logo">
+            <div class="icono-hotel">🏨</div>
+            <h1>HotelWeb</h1>
+            <p>Sistema de Gestión Hotelera</p>
+        </div>
+
+        <!-- MENSAJE CUANDO EL USUARIO O CONTRASEÑA SON INCORRECTOS -->
+        <div
+            class="mensaje-error"
+            th:if="${error}"
+            th:text="${error}">
+            Usuario o contraseña incorrectos
+        </div>
+
+        <form action="/login" method="post">
+
+            <div class="campo">
+                <label for="usuario">Usuario</label>
+
+                <input
+                    type="text"
+                    id="usuario"
+                    name="usuario"
+                    placeholder="Ingrese su usuario"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="password">Contraseña</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Ingrese su contraseña"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="boton">
+                Iniciar Sesión
+            </button>
+
+        </form>
+
+        <div class="pie">
+            Sistema Web de Gestión Hotelera
+        </div>
+
+    </div>
+
+</body>
+</html>

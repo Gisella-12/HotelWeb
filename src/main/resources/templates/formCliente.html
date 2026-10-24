@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Cliente</title>
+
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f6f8;
+            padding:40px;
+        }
+
+        .contenedor{
+            background:white;
+            width:500px;
+            margin:auto;
+            padding:30px;
+            border-radius:12px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        h1{
+            color:#163b5c;
+            text-align:center;
+        }
+
+        label{
+            display:block;
+            margin-top:15px;
+            font-weight:bold;
+        }
+
+        input{
+            width:100%;
+            padding:10px;
+            margin-top:5px;
+            border:1px solid #ccc;
+            border-radius:5px;
+            box-sizing:border-box;
+        }
+
+        button{
+            margin-top:25px;
+            width:100%;
+            padding:12px;
+            background:#163b5c;
+            color:white;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#24577f;
+        }
+
+        a{
+            display:block;
+            text-align:center;
+            margin-top:15px;
+            color:#163b5c;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1 th:text="${cliente.idCliente == 0 
+                  ? 'Registrar Cliente' 
+                  : 'Editar Cliente'}">
+        Registrar Cliente
+    </h1>
+
+    <form th:action="@{/clientes/guardar}"
+          th:object="${cliente}"
+          method="post">
+
+        <!-- ID OCULTO PARA EDITAR -->
+        <input type="hidden"
+               th:field="*{idCliente}">
+
+        <label>DNI</label>
+
+        <input type="text"
+               th:field="*{dni}"
+               placeholder="Ingrese DNI"
+               maxlength="8"
+               required>
+
+        <label>Nombre</label>
+
+        <input type="text"
+               th:field="*{nombre}"
+               placeholder="Ingrese nombre"
+               required>
+
+        <label>Apellido</label>
+
+        <input type="text"
+               th:field="*{apellido}"
+               placeholder="Ingrese apellido"
+               required>
+
+        <label>Teléfono</label>
+
+        <input type="text"
+               th:field="*{telefono}"
+               placeholder="Ingrese teléfono"
+               required>
+
+        <label>Correo</label>
+
+        <input type="email"
+               th:field="*{correo}"
+               placeholder="Ingrese correo"
+               required>
+
+        <button type="submit"
+                th:text="${cliente.idCliente == 0 
+                         ? 'Guardar Cliente' 
+                         : 'Actualizar Cliente'}">
+            Guardar Cliente
+        </button>
+
+    </form>
+
+    <a href="/clientes">
+        Volver a clientes
+    </a>
+
+</div>
+
+</body>
+
+</html>

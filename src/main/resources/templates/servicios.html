@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<title>Gestión de Servicios</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
+}
+
+body{
+    background:#f4f6f8;
+    padding:30px;
+}
+
+.contenedor{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+h1{
+    color:#163b5c;
+    margin-bottom:20px;
+}
+
+.botones-superiores{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.boton{
+    background:#163b5c;
+    color:white;
+    padding:12px 20px;
+    text-decoration:none;
+    border-radius:6px;
+    display:inline-block;
+}
+
+.boton:hover{
+    background:#24577f;
+}
+
+.principal{
+    background:#555;
+    color:white;
+    padding:12px 20px;
+    text-decoration:none;
+    border-radius:6px;
+    display:inline-block;
+}
+
+.principal:hover{
+    background:#333;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#163b5c;
+    color:white;
+    padding:12px;
+}
+
+td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
+}
+
+.editar{
+    background:#2980b9;
+    color:white;
+    padding:8px 12px;
+    text-decoration:none;
+    border-radius:5px;
+    margin-right:6px;
+}
+
+.eliminar{
+    background:#c0392b;
+    color:white;
+    padding:8px 12px;
+    text-decoration:none;
+    border-radius:5px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>Gestión de Servicios</h1>
+
+<div class="botones-superiores">
+
+    <a class="boton" href="/servicios/nuevo">
+        + Nuevo Servicio
+    </a>
+
+    <a class="principal" href="/panel">
+        🏠 Página Principal
+    </a>
+
+</div>
+
+<table>
+
+<tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Descripción</th>
+    <th>Precio</th>
+    <th>Acción</th>
+</tr>
+
+<tr th:each="s : ${servicios}">
+
+    <td th:text="${s.idServicio}"></td>
+
+    <td th:text="${s.nombre}"></td>
+
+    <td th:text="${s.descripcion}"></td>
+
+    <td th:text="${s.precio}"></td>
+
+    <td>
+
+        <a class="editar"
+           th:href="@{/servicios/editar/{id}(id=${s.idServicio})}">
+            Editar
+        </a>
+
+        <a class="eliminar"
+           th:href="@{/servicios/eliminar/{id}(id=${s.idServicio})}">
+            Eliminar
+        </a>
+
+    </td>
+
+</tr>
+
+</table>
+
+</div>
+
+</body>
+
+</html>

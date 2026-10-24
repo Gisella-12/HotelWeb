@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Historial de reservas</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            padding: 30px;
+            background: #f4f6f8;
+            color: #263238;
+        }
+
+        .contenedor {
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            color: #163b5c;
+        }
+
+        .descripcion {
+            margin-bottom: 20px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .botones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .boton,
+        .principal,
+        .cuenta {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .boton,
+        .cuenta {
+            background: #163b5c;
+        }
+
+        .boton:hover,
+        .cuenta:hover {
+            background: #24577f;
+        }
+
+        .principal {
+            background: #555;
+        }
+
+        .principal:hover {
+            background: #333;
+        }
+
+        .contador {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #d5e2ed;
+            border-radius: 6px;
+            background: #f1f6fa;
+            color: #163b5c;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 14px;
+            background: #163b5c;
+            color: white;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f5f8fb;
+        }
+
+        .estado {
+            font-weight: bold;
+            color: #24577f;
+        }
+
+        .sin-registro {
+            color: #666;
+        }
+
+        .vacio {
+            padding: 25px;
+            text-align: center;
+            color: #666;
+        }
+
+        .cuenta {
+            padding: 9px 12px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .contenedor {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="contenedor">
+
+    <h1>Historial de reservas</h1>
+
+    <p class="descripcion">
+        Consulta las estancias con salida registrada.
+        En Ver cuenta encontrarás el alojamiento,
+        los adicionales y los pagos de cada reserva.
+    </p>
+
+    <div class="botones">
+
+        <a class="boton" th:href="@{/reservas}">
+            Volver a reservas
+        </a>
+
+        <a class="principal" th:href="@{/panel}">
+            Página Principal
+        </a>
+
+    </div>
+
+    <p class="contador">
+        <strong>Estancias con salida registrada:</strong>
+        <span th:text="${totalEstancias}"></span>
+    </p>
+
+    <div class="tabla-contenedor">
+        <table>
+
+            <thead>
+                <tr>
+                    <th scope="col">Reserva</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Habitación</th>
+                    <th scope="col">Inicio reservado</th>
+                    <th scope="col">Fin reservado</th>
+                    <th scope="col">Check-in registrado</th>
+                    <th scope="col">Check-out registrado</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Consulta</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:if="${#lists.isEmpty(historial)}">
+                    <td colspan="9" class="vacio">
+                        No hay estancias con salida registrada.
+                    </td>
+                </tr>
+
+                <tr th:each="r : ${historial}">
+
+                    <td th:text="${r.idReserva}"></td>
+
+                    <td th:text="${r.nombreCliente}"></td>
+
+                    <td th:text="${r.descripcionHabitacion}"></td>
+
+                    <td th:text="${#temporals.format(
+                        r.fechaInicio, 'dd/MM/yyyy'
+                    )}"></td>
+
+                    <td th:text="${#temporals.format(
+                        r.fechaFin, 'dd/MM/yyyy'
+                    )}"></td>
+
+                    <td>
+                        <span th:if="${r.fechaCheckIn != null}"
+                              th:text="${#temporals.format(
+                                  r.fechaCheckIn,
+                                  'dd/MM/yyyy HH:mm'
+                              )}">
+                        </span>
+
+                        <span th:if="${r.fechaCheckIn == null}"
+                              class="sin-registro">
+                            Sin registro
+                        </span>
+                    </td>
+
+                    <td th:text="${#temporals.format(
+                        r.fechaCheckOut, 'dd/MM/yyyy HH:mm'
+                    )}"></td>
+
+                    <td class="estado"
+                        th:text="${r.estado}">
+                    </td>
+
+                    <td>
+                        <a class="cuenta"
+                           th:href="@{/reservas/{id}/consumos(
+                               id=${r.idReserva}
+                           )}">
+                            Ver cuenta
+                        </a>
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Gestión de Pagos</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            padding: 30px;
+            color: #263238;
+        }
+
+        .contenedor {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #163b5c;
+            margin-bottom: 20px;
+        }
+
+        .botones-superiores {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .boton,
+        .principal {
+            display: inline-block;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .boton {
+            background: #163b5c;
+        }
+
+        .boton:hover {
+            background: #24577f;
+        }
+
+        .principal {
+            background: #555;
+        }
+
+        .principal:hover {
+            background: #333;
+        }
+
+        .mensaje {
+            padding: 14px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+
+        .exito {
+            color: #205c29;
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+        }
+
+        .error {
+            color: #922b21;
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #163b5c;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .importe {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .acciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .editar,
+        .eliminar,
+        .cuenta {
+            display: inline-block;
+            color: white;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .editar {
+            background: #2980b9;
+        }
+
+        .eliminar {
+            background: #c0392b;
+        }
+
+        .cuenta {
+            background: #163b5c;
+        }
+
+        .vacio {
+            text-align: center;
+            color: #666;
+            padding: 25px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .contenedor {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="contenedor">
+
+    <h1>Gestión de Pagos</h1>
+
+    <div class="botones-superiores">
+
+        <a class="boton" th:href="@{/pagos/nuevo}">
+            + Nuevo Pago
+        </a>
+
+        <a class="principal" th:href="@{/panel}">
+            🏠 Página Principal
+        </a>
+
+    </div>
+
+    <!-- MENSAJE DE ÉXITO -->
+    <div th:if="${mensaje != null}"
+         class="mensaje exito"
+         role="status"
+         th:text="${mensaje}">
+    </div>
+
+    <!-- MENSAJE DE ERROR -->
+    <div th:if="${error != null}"
+         class="mensaje error"
+         role="alert"
+         th:text="${error}">
+    </div>
+
+    <div class="tabla-contenedor">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Reserva</th>
+                    <th scope="col">Fecha de pago</th>
+                    <th scope="col" class="importe">Monto</th>
+                    <th scope="col">Método de pago</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:if="${#lists.isEmpty(pagos)}">
+                    <td colspan="6" class="vacio">
+                        No hay pagos registrados.
+                    </td>
+                </tr>
+
+                <tr th:each="p : ${pagos}">
+
+                    <td th:text="${p.idPago}"></td>
+
+                    <td th:text="${p.idReserva}"></td>
+
+                    <td th:text="${#temporals.format(
+                        p.fechaPago, 'dd/MM/yyyy'
+                    )}"></td>
+
+                    <td class="importe">
+                        S/
+                        <span th:text="${#numbers.formatDecimal(
+                            p.monto, 1, 2
+                        )}"></span>
+                    </td>
+
+                    <td th:text="${p.metodoPago}"></td>
+
+                    <td>
+                        <div class="acciones">
+
+                            <a class="cuenta"
+                               th:href="@{/reservas/{id}/consumos(
+                                   id=${p.idReserva}
+                               )}">
+                                Ver cuenta
+                            </a>
+
+                            <a class="editar"
+                               th:href="@{/pagos/editar/{id}(
+                                   id=${p.idPago}
+                               )}">
+                                Editar
+                            </a>
+
+                            <a class="eliminar"
+                               th:href="@{/pagos/eliminar/{id}(
+                                   id=${p.idPago}
+                               )}"
+                               onclick="return confirm(
+                                   '¿Deseas eliminar este pago?'
+                               );">
+                                Eliminar
+                            </a>
+
+                        </div>
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</main>
+
+</body>
+</html>
